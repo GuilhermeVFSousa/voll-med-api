@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "db.senha",
+    "type": "java.lang.String",
+    "description": "A description for 'db.senha'"
+  },
+  {
+    "name": "db.senha",
+    "type": "java.lang.String",
+    "description": "A description for 'db.senha'"
+  },
+  {
+    "name": "db.senha",
+    "type": "java.lang.String",
+    "description": "A description for 'db.senha'"
+  },
+  {
+    "name": "flyway.locations",
+    "type": "java.lang.String",
+    "description": "A description for 'flyway.locations'"
+  },
+  {
+    "name": "api.securety.token.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'api.securety.token.secret'"
+  },
+  {
+    "name": "api.security.token.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'api.security.token.secret'"
+  }
+]}
