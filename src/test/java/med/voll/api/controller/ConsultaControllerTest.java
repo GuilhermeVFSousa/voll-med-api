@@ -1,9 +1,9 @@
 package med.voll.api.controller;
 
-import med.voll.api.domain.consulta.DadosAgendamentoConsulta;
-import med.voll.api.domain.consulta.DadosDetalhamentoConsulta;
-import med.voll.api.domain.medico.Especialidade;
-import med.voll.api.service.AgendaDeConsultas;
+import med.voll.api.consulta.DTO.DadosAgendamentoConsultaDTO;
+import med.voll.api.consulta.DTO.DadosDetalhamentoConsultaDTO;
+import med.voll.api.medico.Especialidade;
+import med.voll.api.consulta.service.ConsultaService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +33,13 @@ class ConsultaControllerTest {
     private MockMvc mvc;
 
     @Autowired
-    private JacksonTester<DadosAgendamentoConsulta> dadosAgendamentoConsultaJson;
+    private JacksonTester<DadosAgendamentoConsultaDTO> dadosAgendamentoConsultaJson;
 
     @Autowired
-    private JacksonTester<DadosDetalhamentoConsulta> dadosDetalhamentoConsultaJson;
+    private JacksonTester<DadosDetalhamentoConsultaDTO> dadosDetalhamentoConsultaJson;
 
     @MockBean
-    private AgendaDeConsultas agendaDeConsultas;
+    private ConsultaService consultaService;
 
     @Test
     @DisplayName("Deveria devolver codigo http 400 quando informacoes estao invalidas")
@@ -58,15 +58,15 @@ class ConsultaControllerTest {
         var data = LocalDateTime.now().plusHours(1);
         var especialidade = Especialidade.CARDIOLOGIA;
 
-        var dadosDetalhamento = new DadosDetalhamentoConsulta(null, 2l, 5l, data);
-        when(agendaDeConsultas.agendar(any())).thenReturn(dadosDetalhamento);
+        var dadosDetalhamento = new DadosDetalhamentoConsultaDTO(null, 2l, 5l, data, data);
+        when(consultaService.agendar(any())).thenReturn(dadosDetalhamento);
 
         var response = mvc
                 .perform(
                         post("/consultas")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(dadosAgendamentoConsultaJson.write(
-                                        new DadosAgendamentoConsulta(2l, 5l, data, especialidade)
+                                        new DadosAgendamentoConsultaDTO(2l, 5l, data, 30l, data, especialidade)
                                 ).getJson())
                 )
                 .andReturn().getResponse();

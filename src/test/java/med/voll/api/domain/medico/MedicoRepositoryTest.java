@@ -1,9 +1,13 @@
 package med.voll.api.domain.medico;
 
-import med.voll.api.domain.consulta.Consulta;
-import med.voll.api.domain.endereco.DadosEndereco;
-import med.voll.api.domain.paciente.DadosCadastroPaciente;
-import med.voll.api.domain.paciente.Paciente;
+import med.voll.api.consulta.domain.Consulta;
+import med.voll.api.endereco.DTO.DadosEnderecoDTO;
+import med.voll.api.paciente.DTO.DadosCadastroPacienteDTO;
+import med.voll.api.paciente.domain.Paciente;
+import med.voll.api.medico.DTO.DadosCadastroMedicoDTO;
+import med.voll.api.medico.Especialidade;
+import med.voll.api.medico.domain.Medico;
+import med.voll.api.medico.repository.MedicoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,8 +84,8 @@ class MedicoRepositoryTest {
         return paciente;
     }
 
-    private DadosCadastroMedico dadosMedico(String nome, String email, String crm, Especialidade especialidade) {
-        return new DadosCadastroMedico(
+    private DadosCadastroMedicoDTO dadosMedico(String nome, String email, String crm, Especialidade especialidade) {
+        return new DadosCadastroMedicoDTO(
                 nome,
                 email,
                 "61999999999",
@@ -91,8 +95,8 @@ class MedicoRepositoryTest {
         );
     }
 
-    private DadosCadastroPaciente dadosPaciente(String nome, String email, String cpf) {
-        return new DadosCadastroPaciente(
+    private DadosCadastroPacienteDTO dadosPaciente(String nome, String email, String cpf) {
+        return new DadosCadastroPacienteDTO(
                 nome,
                 email,
                 "61999999999",
@@ -101,8 +105,8 @@ class MedicoRepositoryTest {
         );
     }
 
-    private DadosEndereco dadosEndereco() {
-        return new DadosEndereco(
+    private DadosEnderecoDTO dadosEndereco() {
+        return new DadosEnderecoDTO(
                 "rua xpto",
                 "bairro",
                 "00000000",
