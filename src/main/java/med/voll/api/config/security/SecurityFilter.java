@@ -33,13 +33,15 @@ public class SecurityFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
+		var tokenJWT = recuperarToken(request);
 			try {
-				var tokenJWT = recuperarToken(request);
-				String subject = null;
-				subject = tokenService.getSubject(tokenJWT);
-				var usuario = usuarioRepository.findByLogin(subject);
-				var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+				if (tokenJWT != null) {
+					String subject = null;
+					subject = tokenService.getSubject(tokenJWT);
+					var usuario = usuarioRepository.findByLogin(subject);
+					var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
 			} catch (TokenInvalidoException e) {
 				var responseError = Map.of("error", "Falha na autenticação");
 				var objectMapper = new ObjectMapper();
@@ -50,13 +52,13 @@ public class SecurityFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private String recuperarToken(HttpServletRequest request) throws TokenInvalidoException {
+	private String recuperarToken(HttpServletRequest request) {
 		var authorizationHeader = request.getHeader("Authorization");
 		if (authorizationHeader != null) {
 			return authorizationHeader.replace("Bearer ", "");
-		} else {
-			throw new TokenInvalidoException();
 		}
+		return null;
+
 	}
 	
 	
