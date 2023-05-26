@@ -1,26 +1,27 @@
 package med.voll.api.consulta.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import med.voll.api.consulta.DTO.DadosAgendamentoConsultaDTO;
 import med.voll.api.consulta.DTO.DadosCancelamentoConsultaDTO;
+import med.voll.api.consulta.DTO.DadosEditarDataConsultaDTO;
 import med.voll.api.consulta.DTO.DadosListagemConsultaDTO;
+import med.voll.api.consulta.service.ConsultaService;
 import med.voll.api.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import med.voll.api.consulta.service.ConsultaService;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("consultas")
@@ -45,16 +46,37 @@ public class ConsultaController {
 		DadosListagemConsultaDTO response = null;
 		try {
 			response = consultaService.consultasPorId(id);
-		} catch (RegraNegocioException e) {
+		} catch (ConsultaNaoEncontradaException e) {
 			throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
 		}
 		return ResponseEntity.ok().body(response);
+	}
+
+	@PutMapping({"/{id}", "/{id}/"})
+	public ResponseEntity<?>editConsultaDate(@PathVariable Long id, @RequestBody @Valid @NotNull DadosEditarDataConsultaDTO dados)
+			throws MethodArgumentNotValidException {
+		try {
+			consultaService.editarDataConsulta(id, dados);
+			return ResponseEntity.ok().build();
+		} catch (ConsultaNaoEncontradaException e) {
+			throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
 		}
+	}
+
+	@DeleteMapping({"/{id}", "/{id}/"})
+	public ResponseEntity<?> excluirConsulta(@PathVariable @NonNull Long id) {
+		try {
+			consultaService.excluirConsulta(id);
+			return ResponseEntity.noContent().build();
+		} catch (ConsultaNaoEncontradaException e) {
+			throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
+		}
+	}
 
 		@PostMapping
 		@Transactional
 		public ResponseEntity<?> agendar(@RequestBody @Valid @NotNull DadosAgendamentoConsultaDTO dados)
-        throws MethodArgumentNotValidException {
+    throws MethodArgumentNotValidException {
 			var authentication = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if (authentication == null)
 				throw new UsuarioEncontradoException();

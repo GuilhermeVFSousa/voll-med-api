@@ -6,18 +6,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
-import med.voll.api.consulta.DTO.DadosAgendamentoConsultaDTO;
-import med.voll.api.consulta.DTO.DadosListagemConsultaDTO;
+import jakarta.validation.constraints.NotNull;
+import med.voll.api.consulta.DTO.*;
 import med.voll.api.consulta.domain.Consulta;
 import med.voll.api.consulta.repository.ConsultaRepository;
 import med.voll.api.consulta.validacoes.cancelamento.ValidadorCancelamentoDeConsulta;
-import med.voll.api.consulta.DTO.DadosCancelamentoConsultaDTO;
-import med.voll.api.consulta.DTO.DadosDetalhamentoConsultaDTO;
-import med.voll.api.exceptions.RegraNegocioException;
+import med.voll.api.exceptions.*;
 import med.voll.api.medico.DTO.DadosResumidosMedicoDTO;
 import med.voll.api.paciente.DTO.DadosResumidosPacienteDTO;
-import med.voll.api.exceptions.MedicoNaoEncontradoException;
-import med.voll.api.exceptions.PacienteNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -26,7 +22,6 @@ import med.voll.api.consulta.validacoes.agendamento.ValidadorAgendamentoDeConsul
 import med.voll.api.medico.domain.Medico;
 import med.voll.api.medico.repository.MedicoRepository;
 import med.voll.api.paciente.repository.PacienteRepository;
-import med.voll.api.exceptions.ValidacaoException;
 
 @Service
 public class ConsultaService {
@@ -60,17 +55,37 @@ public class ConsultaService {
 				.collect(Collectors.toList());
 	}
 
-	public DadosListagemConsultaDTO consultasPorId(@NonNull Long id) throws RegraNegocioException {
+	public DadosListagemConsultaDTO consultasPorId(@NonNull Long id) throws ConsultaNaoEncontradaException {
 		try {
 			var consulta = consultaRepository.getReferenceById(id);
 			return converterDadosConsulta(consulta);
 		} catch (EntityNotFoundException e) {
-			throw new RegraNegocioException();
+			throw new ConsultaNaoEncontradaException();
+		}
+	}
+
+	public void editarDataConsulta(@NonNull Long id, @NotNull DadosEditarDataConsultaDTO dto) throws ConsultaNaoEncontradaException {
+		try {
+			var consulta = consultaRepository.getReferenceById(id);
+			consulta.setData(dto.data());
+			var dataTermino = dto.data().plusMinutes(dto.duracao());
+			consulta.setDataTermino(dataTermino);
+			consultaRepository.save(consulta);
+		} catch (EntityNotFoundException e) {
+			throw new ConsultaNaoEncontradaException();
+		}
+	}
+
+	public void excluirConsulta(@NonNull Long id) throws ConsultaNaoEncontradaException {
+		try {
+			consultaRepository.deleteById(id);
+		} catch (EntityNotFoundException e) {
+			throw new ConsultaNaoEncontradaException();
 		}
 	}
 
 	public DadosDetalhamentoConsultaDTO agendar(DadosAgendamentoConsultaDTO dados)
-		throws PacienteNaoEncontradoException, MedicoNaoEncontradoException, ValidacaoException {
+	throws PacienteNaoEncontradoException, MedicoNaoEncontradoException, ValidacaoException {
 
 		if (!pacienteRepository.existsById(dados.idPaciente())) {
 			throw new PacienteNaoEncontradoException();
@@ -103,14 +118,14 @@ public class ConsultaService {
 	}
 
 	public void cancelar(DadosCancelamentoConsultaDTO dados) {
-	if (!consultaRepository.existsById(dados.idConsulta())) {
-		throw new ValidacaoException("Id da consulta informado não existe!");
-	}
+		if (!consultaRepository.existsById(dados.idConsulta())) {
+			throw new ValidacaoException("Id da consulta informado não existe!");
+		}
 
-	validadoresCancelamento.forEach(v -> v.validar(dados));
+		validadoresCancelamento.forEach(v -> v.validar(dados));
 
-	var consulta = consultaRepository.getReferenceById(dados.idConsulta());
-	consulta.cancelar(dados.motivo());
+		var consulta = consultaRepository.getReferenceById(dados.idConsulta());
+		consulta.cancelar(dados.motivo());
 	}
 
 	private Medico escolherMedico(DadosAgendamentoConsultaDTO dados, LocalDateTime dataTermino) {

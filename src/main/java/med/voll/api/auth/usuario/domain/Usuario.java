@@ -32,6 +32,7 @@ public class Usuario implements UserDetails {
 	private Long id;
 	private String login;
 	private String senha;
+	private boolean isSuperUser = false;
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority("ROLE_USER"));

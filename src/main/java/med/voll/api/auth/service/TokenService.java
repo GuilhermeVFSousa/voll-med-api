@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
@@ -30,11 +31,12 @@ public class TokenService {
 
 		try {
 		    var algoritmo = Algorithm.HMAC256(secret);
+			var superUser = usuario.isSuperUser();
 		    return JWT.create()
 		    		.withIssuer("API Voll.med")
 		    		.withSubject(usuario.getLogin())
 		    		.withClaim("id", usuario.getId())
-					.withPayload(Map.of("teste", new String[]{"teste", "teste", "teste"}))
+					.withPayload(Map.of("superUser", superUser))
 		    		.withExpiresAt(dataExpiracao())
 		    		.sign(algoritmo);
 		} catch (JWTCreationException exception){
