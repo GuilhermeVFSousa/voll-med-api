@@ -41,6 +41,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 					var usuario = usuarioRepository.findByLogin(subject);
 					var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
 					SecurityContextHolder.getContext().setAuthentication(authentication);
+				} else {
+					response.setStatus(HttpStatus.FORBIDDEN.value());
 				}
 			} catch (TokenInvalidoException e) {
 				var responseError = Map.of("error", "Falha na autenticação");
