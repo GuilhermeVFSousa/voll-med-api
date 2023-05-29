@@ -2,7 +2,6 @@ package med.voll.api.auth.usuario.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import med.voll.api.auth.usuario.DTO.DadosAutenticacaoDTO;
 import med.voll.api.auth.usuario.DTO.DadosUsuarioDTO;
 import med.voll.api.auth.usuario.enums.Roles;
 import med.voll.api.auth.usuario.service.UsuarioService;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -20,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -30,8 +29,8 @@ public class UsuarioController {
     private UsuarioService service;
 
     @GetMapping
-    public ResponseEntity<Set<DadosUsuarioDTO>> usuarios(@NonNull @CurrentSecurityContext SecurityContext context) {
-        if (isSuperUser(context)){
+    public ResponseEntity<List<DadosUsuarioDTO>> usuarios(@NonNull @CurrentSecurityContext SecurityContext context) {
+        if (UsuarioController.isSuperUser(context)){
             var users = service.usuarios();
             return ResponseEntity.ok().body(users);
         } else {
@@ -41,9 +40,9 @@ public class UsuarioController {
 
 
     @PostMapping
-    public ResponseEntity<?> create(@NotNull @Valid @RequestBody DadosAutenticacaoDTO dto,
+    public ResponseEntity<?> create(@NotNull @Valid @RequestBody DadosUsuarioDTO dto,
                                     @NonNull @CurrentSecurityContext SecurityContext context) {
-        if (isSuperUser(context)){
+        if (UsuarioController.isSuperUser(context)){
             try {
                 var user = service.criarUsuario(dto);
                 URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();

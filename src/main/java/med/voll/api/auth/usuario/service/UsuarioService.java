@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,23 +23,24 @@ public class UsuarioService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public Set<DadosUsuarioDTO> usuarios() {
-        return repository.findAll().stream().map(this::domainToDto).collect(Collectors.toSet());
+    public List<DadosUsuarioDTO> usuarios() {
+        return repository.findAllOrderById().stream().map(this::domainToDto).collect(Collectors.toList());
     }
 
-    public Usuario criarUsuario(DadosAutenticacaoDTO dto) throws EmailExistenteException {
+    public Usuario criarUsuario(DadosUsuarioDTO dto) throws EmailExistenteException {
         var usuario = dtoToDomain(dto);
         validarEmail(usuario);
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        usuario.setAtivo(true);
         return repository.save(usuario);
     }
 
-    private Usuario dtoToDomain(DadosAutenticacaoDTO dto) {
-        return new Usuario(null, dto.login(), dto.senha(), false, true);
+    private Usuario dtoToDomain(DadosUsuarioDTO dto) {
+        return Usuario.converterDadosUsuarioDtoToDomain(dto);
     }
 
     private DadosUsuarioDTO domainToDto(Usuario usuario) {
-        return new DadosUsuarioDTO(usuario.getId(), usuario.getLogin(), usuario.isSuperUser());
+        return Usuario.converterDomainToDadosUsuarioDTO(usuario);
     }
 
     private void validarEmail(Usuario usuario) throws EmailExistenteException{

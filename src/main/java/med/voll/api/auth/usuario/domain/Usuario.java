@@ -1,9 +1,11 @@
 package med.voll.api.auth.usuario.domain;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.*;
+import med.voll.api.auth.usuario.DTO.DadosUsuarioDTO;
 import med.voll.api.auth.usuario.enums.Roles;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,6 +25,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Usuario implements UserDetails {
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +35,14 @@ public class Usuario implements UserDetails {
 	private String login;
 
 	private String senha;
+
+	private String nome;
+
+	@Column(columnDefinition = "longtext")
+	private String imagem;
+
 	private boolean superUser = false;
+
 	private boolean ativo = true;
 
 	@Override
@@ -72,6 +82,30 @@ public class Usuario implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	public static DadosUsuarioDTO converterDomainToDadosUsuarioDTO(Usuario usuario) {
+		return new DadosUsuarioDTO(
+				usuario.id != null ? usuario.id : null,
+				usuario.getLogin(),
+				usuario.getPassword(),
+				usuario.getNome(),
+				usuario.getImagem() != null ? usuario.getImagem() : null,
+				usuario.isSuperUser(),
+				usuario.isAtivo()
+		);
+	}
+
+	public static Usuario converterDadosUsuarioDtoToDomain(DadosUsuarioDTO dto) {
+		return new Usuario(
+				dto.id() != null ? dto.id() : null,
+				dto.login(),
+				dto.password(),
+				dto.nome(),
+				dto.imagem() != null ? dto.imagem() : null,
+				dto.superUser(),
+				dto.ativo()
+		);
 	}
 
 }
