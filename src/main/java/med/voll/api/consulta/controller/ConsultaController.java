@@ -1,7 +1,6 @@
 package med.voll.api.consulta.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -75,11 +74,10 @@ public class ConsultaController {
 
 		@PostMapping
 		@Transactional
-		public ResponseEntity<?> agendar(@RequestBody @Valid @NotNull DadosAgendamentoConsultaDTO dados)
-    throws MethodArgumentNotValidException {
+		public ResponseEntity<?> agendar(@RequestBody @Valid @NotNull DadosAgendamentoConsultaDTO dados) {
 			var authentication = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if (authentication == null)
-				throw new UsuarioEncontradoException();
+				throw new UsuarioExistenteException();
 			var email = ((UserDetails)authentication).getUsername();
 			try {
 				var dto = consultaService.agendar(dados);
@@ -88,7 +86,7 @@ public class ConsultaController {
 				throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "ID do paciente informado não existe");
 			} catch (MedicoNaoEncontradoException e) {
 				throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "ID do médico informado não existe");
-			} catch (UsuarioEncontradoException e) {
+			} catch (UsuarioExistenteException e) {
 				throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "O usuário não existe");
 			}catch (ValidacaoException e) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
