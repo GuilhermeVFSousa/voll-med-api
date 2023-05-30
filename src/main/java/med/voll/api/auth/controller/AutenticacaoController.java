@@ -36,9 +36,8 @@ public class AutenticacaoController {
 			var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
 			var authentication = manager.authenticate(authenticationToken);
 			var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
-			var userDoToken = dados.login();
 			var expiracao = tokenService.getExpiration(tokenJWT);
-			return ResponseEntity.ok(new DadosTokenJWT(tokenJWT, userDoToken, expiracao));
+			return ResponseEntity.ok(new DadosTokenJWT(tokenJWT, expiracao));
 		} catch (TokenInvalidoException e) {
 			throw new NoTokenException(HttpStatus.FORBIDDEN, "Token inválido ou expirado!");
 		} catch (AuthenticationException e) {
