@@ -90,7 +90,7 @@ public class Usuario implements UserDetails {
 				usuario.getLogin(),
 				usuario.getPassword(),
 				usuario.getNome(),
-				usuario.getImagem() != null ? usuario.getImagem() : null,
+				null,
 				usuario.isSuperUser(),
 				usuario.isAtivo()
 		);

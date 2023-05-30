@@ -5,6 +5,7 @@ import med.voll.api.auth.usuario.DTO.DadosUsuarioDTO;
 import med.voll.api.auth.usuario.domain.Usuario;
 import med.voll.api.auth.usuario.repository.UsuarioRepository;
 import med.voll.api.exceptions.EmailExistenteException;
+import med.voll.api.exceptions.UsuarioNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,38 +26,76 @@ public class UsuarioService {
     private BCryptPasswordEncoder passwordEncoder;
 
     public List<DadosUsuarioDTO> usuarios() {
-        return repository.findAllOrderById().stream().map(this::domainToDto).collect(Collectors.toList());
+        return repository.findAllOrderById().stream()
+                .map(Usuario::converterDomainToDadosUsuarioDTO)
+                .collect(Collectors.toList());
     }
 
     public Usuario criarUsuario(DadosUsuarioDTO dto) throws EmailExistenteException {
-        var usuario = dtoToDomain(dto);
+        var usuario = Usuario.converterDadosUsuarioDtoToDomain(dto);
         validarEmail(usuario);
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuario.setAtivo(true);
         return repository.save(usuario);
     }
 
-    public Optional<Usuario> obterUsuarioPorEmail(@NonNull String email) throws EmailExistenteException {
-        var usuario = repository.findByEmail(email).orElseThrow(EmailExistenteException::new);
+    public Usuario editarUsuario(@NonNull String email,
+                                 @NonNull DadosUsuarioDTO dto,
+                                 @NonNull boolean atualizarSenha,
+                                 @NonNull boolean imageRemove)
+            throws UsuarioNaoEncontradoException, EmailExistenteException {
+        var usuarioAtual = repository.findByEmail(email).orElseThrow(UsuarioNaoEncontradoException::new);
+        var changes = false;
+
+        if (!usuarioAtual.getLogin().equals(dto.login())){
+            validarEmail(dto.login());
+            usuarioAtual.setLogin(dto.login());
+            changes = true;
+        }
+
+        if (!usuarioAtual.getNome().equals(dto.nome())){
+            usuarioAtual.setNome(dto.nome());
+            changes = true;
+        }
+
+        if (imageRemove){
+            usuarioAtual.setImagem(null);
+            changes = true;
+        }
+
+        if (dto.imagem() != null){
+            usuarioAtual.setImagem(dto.imagem());
+            changes = true;
+        }
+
+        if (atualizarSenha){
+            usuarioAtual.setSenha(passwordEncoder.encode(dto.password()));
+            changes = true;
+        }
+
+        return changes ? repository.save(usuarioAtual) : usuarioAtual;
+    }
+
+
+    public Optional<Usuario> obterUsuarioPorEmail(@NonNull String email) throws UsuarioNaoEncontradoException {
+        var usuario = repository.findByEmail(email).orElseThrow(UsuarioNaoEncontradoException::new);
         return Optional.of(usuario);
     }
 
-    public String obterImagemPorUsuario(@NonNull String email) {
-        var checkEmail = repository.findByEmail(email).orElseThrow(EmailExistenteException::new);
+    public String obterImagemPorUsuario(@NonNull String email) throws UsuarioNaoEncontradoException {
+        var checkEmail = repository.findByEmail(email).orElseThrow(UsuarioNaoEncontradoException::new);
         return repository.findUsuarioImagemByEmail(checkEmail.getLogin()).orElse("");
-    }
-
-    private Usuario dtoToDomain(DadosUsuarioDTO dto) {
-        return Usuario.converterDadosUsuarioDtoToDomain(dto);
-    }
-
-    private DadosUsuarioDTO domainToDto(Usuario usuario) {
-        return Usuario.converterDomainToDadosUsuarioDTO(usuario);
     }
 
     private void validarEmail(Usuario usuario) throws EmailExistenteException{
         var email = repository.findByEmail(usuario.getLogin());
         if (email.isPresent())
+            throw new EmailExistenteException();
+    }
+
+    private void validarEmail(String email) throws EmailExistenteException{
+        var checkEmail = repository.findByEmail(email);
+        if (checkEmail.isPresent())
             throw new EmailExistenteException();
     }
 }
