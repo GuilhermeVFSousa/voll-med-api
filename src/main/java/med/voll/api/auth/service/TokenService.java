@@ -31,12 +31,19 @@ public class TokenService {
 
 		try {
 		    var algoritmo = Algorithm.HMAC256(secret);
+			var id = usuario.getId();
+			var nome = usuario.getNome();
+			var email = usuario.getLogin();
 			var superUser = usuario.isSuperUser();
+			var ativo = usuario.isAtivo();
 		    return JWT.create()
 		    		.withIssuer("API Voll.med")
-		    		.withSubject(usuario.getLogin())
-		    		.withClaim("id", usuario.getId())
-					.withPayload(Map.of("superUser", superUser))
+					.withSubject(email)
+					.withPayload(Map.of(
+							"id", id,
+							"nome", nome,
+							"ativo",ativo,
+							"superUser", superUser))
 		    		.withExpiresAt(dataExpiracao())
 		    		.sign(algoritmo);
 		} catch (JWTCreationException exception){
@@ -56,6 +63,7 @@ public class TokenService {
 			if (decodedJWT.getExpiresAt().before(new Date())) {
 				throw new TokenInvalidoException();
 			}
+
 			return decodedJWT.getSubject();
 
 		} catch (JWTVerificationException e){
