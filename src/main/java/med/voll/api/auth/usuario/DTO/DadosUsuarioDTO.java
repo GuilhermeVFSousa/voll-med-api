@@ -13,7 +13,7 @@ public record DadosUsuarioDTO(
 		String login,
 
 		@JsonIgnore
-		@NotNull
+		@Nullable
 		String password,
 		@NotNull
 		String nome,

@@ -1,5 +1,5 @@
 package med.voll.api.exceptions;
 
-public class EmailExistenteException extends RuntimeException{
+public class EmailExistenteException extends Exception{
 
 }
