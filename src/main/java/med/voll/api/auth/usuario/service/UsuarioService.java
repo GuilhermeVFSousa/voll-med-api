@@ -6,6 +6,7 @@ import med.voll.api.auth.usuario.domain.Usuario;
 import med.voll.api.auth.usuario.repository.UsuarioRepository;
 import med.voll.api.exceptions.EmailExistenteException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,16 @@ public class UsuarioService {
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuario.setAtivo(true);
         return repository.save(usuario);
+    }
+
+    public Optional<Usuario> obterUsuarioPorEmail(@NonNull String email) throws EmailExistenteException {
+        var usuario = repository.findByEmail(email).orElseThrow(EmailExistenteException::new);
+        return Optional.of(usuario);
+    }
+
+    public String obterImagemPorUsuario(@NonNull String email) {
+        var checkEmail = repository.findByEmail(email).orElseThrow(EmailExistenteException::new);
+        return repository.findUsuarioImagemByEmail(checkEmail.getLogin()).orElse("");
     }
 
     private Usuario dtoToDomain(DadosUsuarioDTO dto) {

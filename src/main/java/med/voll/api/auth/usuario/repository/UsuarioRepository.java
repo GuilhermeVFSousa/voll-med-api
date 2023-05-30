@@ -3,6 +3,7 @@ package med.voll.api.auth.usuario.repository;
 import med.voll.api.auth.usuario.domain.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
@@ -14,10 +15,14 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
 	@Query("FROM Usuario u " +
 			"WHERE u.login = :email")
-	Optional<Usuario> findByEmail(String email);
+	Optional<Usuario> findByEmail(@NonNull String email);
 
 	@Query("FROM Usuario u " +
 			"ORDER BY u.id ASC")
 	List<Usuario> findAllOrderById();
+
+	@Query("SELECT u.imagem FROM Usuario u " +
+			"WHERE u.login = :email")
+	Optional<String> findUsuarioImagemByEmail(@NonNull String email);
 
 }
