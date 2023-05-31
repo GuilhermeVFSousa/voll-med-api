@@ -6,7 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import med.voll.api.auth.service.TokenService;
-import med.voll.api.auth.usuario.repository.UsuarioRepository;
+import med.voll.api.usuario.repository.UsuarioRepository;
 import med.voll.api.exceptions.TokenInvalidoException;
 import med.voll.api.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;

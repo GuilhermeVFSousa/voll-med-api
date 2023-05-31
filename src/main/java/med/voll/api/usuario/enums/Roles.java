@@ -1,4 +1,4 @@
-package med.voll.api.auth.usuario.enums;
+package med.voll.api.usuario.enums;
 
 public enum Roles {
     ROLE_ADMIN("ADMIN"),

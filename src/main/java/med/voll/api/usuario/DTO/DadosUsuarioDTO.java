@@ -1,4 +1,4 @@
-package med.voll.api.auth.usuario.DTO;
+package med.voll.api.usuario.DTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;

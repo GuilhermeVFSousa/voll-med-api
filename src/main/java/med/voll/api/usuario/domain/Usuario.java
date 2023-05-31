@@ -1,12 +1,12 @@
-package med.voll.api.auth.usuario.domain;
+package med.voll.api.usuario.domain;
 
 import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.*;
-import med.voll.api.auth.usuario.DTO.DadosUsuarioDTO;
-import med.voll.api.auth.usuario.enums.Roles;
+import med.voll.api.usuario.DTO.DadosUsuarioDTO;
+import med.voll.api.usuario.enums.Roles;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

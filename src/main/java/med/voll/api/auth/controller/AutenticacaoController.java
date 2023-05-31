@@ -2,8 +2,8 @@ package med.voll.api.auth.controller;
 
 import jakarta.validation.Valid;
 import med.voll.api.auth.service.TokenService;
-import med.voll.api.auth.usuario.DTO.DadosAutenticacaoDTO;
-import med.voll.api.auth.usuario.domain.Usuario;
+import med.voll.api.usuario.DTO.DadosAutenticacaoDTO;
+import med.voll.api.usuario.domain.Usuario;
 import med.voll.api.config.security.DadosTokenJWT;
 import med.voll.api.exceptions.HttpErrorResponseException;
 import med.voll.api.exceptions.TokenInvalidoException;
@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/login")
