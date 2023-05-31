@@ -1,25 +1,19 @@
 package med.voll.api.auth.service;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import med.voll.api.exceptions.TokenInvalidoException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-
 import med.voll.api.auth.usuario.domain.Usuario;
-import med.voll.api.exceptions.NoTokenException;
+import med.voll.api.exceptions.TokenInvalidoException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
+import java.util.Map;
 
 @Service
 public class TokenService {

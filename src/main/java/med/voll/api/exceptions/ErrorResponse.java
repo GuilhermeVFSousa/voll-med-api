@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
-public class ErroResponse {
+public class ErrorResponse {
     private HttpStatus status;
     private String mensagem;
 
@@ -14,7 +13,7 @@ public class ErroResponse {
             "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Instant timestamp;
 
-    public ErroResponse(HttpStatus status, String mensagem) {
+    public ErrorResponse(HttpStatus status, String mensagem) {
         this.status = status;
         this.mensagem = mensagem;
         this.timestamp = Instant.now();

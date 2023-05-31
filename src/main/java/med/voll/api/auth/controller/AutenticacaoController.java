@@ -5,7 +5,7 @@ import med.voll.api.auth.service.TokenService;
 import med.voll.api.auth.usuario.DTO.DadosAutenticacaoDTO;
 import med.voll.api.auth.usuario.domain.Usuario;
 import med.voll.api.config.security.DadosTokenJWT;
-import med.voll.api.exceptions.NoTokenException;
+import med.voll.api.exceptions.HttpErrorResponseException;
 import med.voll.api.exceptions.TokenInvalidoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,10 +39,9 @@ public class AutenticacaoController {
 			var expiracao = tokenService.getExpiration(tokenJWT);
 			return ResponseEntity.ok(new DadosTokenJWT(tokenJWT, expiracao));
 		} catch (TokenInvalidoException e) {
-			throw new NoTokenException(HttpStatus.FORBIDDEN, "Token inválido ou expirado!");
+			throw new HttpErrorResponseException(HttpStatus.FORBIDDEN, "Token inválido ou expirado!");
 		} catch (AuthenticationException e) {
-			var responseError = Map.of("error", "Falha na autenticação");
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseError);
+			throw new HttpErrorResponseException(HttpStatus.UNAUTHORIZED, "Falha na autenticação");
 		}
 	}
 

@@ -46,7 +46,7 @@ public class ConsultaController {
 		try {
 			response = consultaService.consultasPorId(id);
 		} catch (ConsultaNaoEncontradaException e) {
-			throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
+			throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
 		}
 		return ResponseEntity.ok().body(response);
 	}
@@ -58,7 +58,7 @@ public class ConsultaController {
 			consultaService.editarDataConsulta(id, dados);
 			return ResponseEntity.ok().build();
 		} catch (ConsultaNaoEncontradaException e) {
-			throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
+			throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
 		}
 	}
 
@@ -68,7 +68,7 @@ public class ConsultaController {
 			consultaService.excluirConsulta(id);
 			return ResponseEntity.noContent().build();
 		} catch (ConsultaNaoEncontradaException e) {
-			throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
+			throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
 		}
 	}
 
@@ -83,11 +83,11 @@ public class ConsultaController {
 				var dto = consultaService.agendar(dados);
 				return ResponseEntity.ok(dto);
 			} catch (PacienteNaoEncontradoException e) {
-				throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "ID do paciente informado não existe");
+				throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "ID do paciente informado não existe");
 			} catch (MedicoNaoEncontradoException e) {
-				throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "ID do médico informado não existe");
+				throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "ID do médico informado não existe");
 			} catch (UsuarioExistenteException e) {
-				throw new RecursoNaoEncontradoException(HttpStatus.NOT_FOUND, "O usuário não existe");
+				throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "O usuário não existe");
 			}catch (ValidacaoException e) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 			}

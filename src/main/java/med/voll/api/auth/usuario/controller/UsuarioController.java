@@ -20,7 +20,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/usuarios")
@@ -35,7 +34,7 @@ public class UsuarioController {
             var users = service.usuarios();
             return ResponseEntity.ok().body(users);
         } else {
-            throw new RecursoNaoEncontradoException(HttpStatus.UNAUTHORIZED, "Não autorizado");
+            throw new HttpErrorResponseException(HttpStatus.UNAUTHORIZED, "Não autorizado");
         }
     }
 
@@ -51,12 +50,12 @@ public class UsuarioController {
                 URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
                 return ResponseEntity.created(uri).build();
             } catch (EmailExistenteException e) {
-                throw new RecursoNaoEncontradoException(HttpStatus.BAD_REQUEST, "E-mail já cadastrado");
+                throw new HttpErrorResponseException(HttpStatus.BAD_REQUEST, "E-mail já cadastrado");
             } catch (SenhaNulaExceptionException e) {
-                throw new RecursoNaoEncontradoException(HttpStatus.BAD_REQUEST, "A senha não pode ser nula");
+                throw new HttpErrorResponseException(HttpStatus.BAD_REQUEST, "A senha não pode ser nula");
             }
         } else {
-            throw new RecursoNaoEncontradoException(HttpStatus.UNAUTHORIZED, "Não autorizado");
+            throw new HttpErrorResponseException(HttpStatus.UNAUTHORIZED, "Não autorizado");
         }
     }
 
@@ -70,9 +69,9 @@ public class UsuarioController {
 
             return ResponseEntity.ok(dto);
         } catch (NaoAutorizadoException e) {
-            throw new RecursoNaoEncontradoException(HttpStatus.UNAUTHORIZED, "Não autorizado");
+            throw new HttpErrorResponseException(HttpStatus.UNAUTHORIZED, "Não autorizado");
         } catch (UsuarioNaoEncontradoException e) {
-            throw new RecursoNaoEncontradoException(HttpStatus.BAD_REQUEST, "Usuário não encontrado");
+            throw new HttpErrorResponseException(HttpStatus.BAD_REQUEST, "Usuário não encontrado");
         }
     }
 
@@ -89,11 +88,11 @@ public class UsuarioController {
 
             return ResponseEntity.ok(updatedUserDto);
         } catch (NaoAutorizadoException e) {
-            throw new RecursoNaoEncontradoException(HttpStatus.UNAUTHORIZED, "Não autorizado");
+            throw new HttpErrorResponseException(HttpStatus.UNAUTHORIZED, "Não autorizado");
         } catch (EmailExistenteException e) {
-            throw new RecursoNaoEncontradoException(HttpStatus.BAD_REQUEST, "E-mail em uso");
+            throw new HttpErrorResponseException(HttpStatus.BAD_REQUEST, "E-mail em uso");
         } catch (UsuarioNaoEncontradoException e) {
-            throw new RecursoNaoEncontradoException(HttpStatus.BAD_REQUEST, "Usuário não encontrado");
+            throw new HttpErrorResponseException(HttpStatus.BAD_REQUEST, "Usuário não encontrado");
         }
     }
 
@@ -108,9 +107,9 @@ public class UsuarioController {
 
             return ResponseEntity.ok().body(response);
         } catch (UsuarioNaoEncontradoException e) {
-            throw new RecursoNaoEncontradoException(HttpStatus.BAD_REQUEST, "Usuário não encontrado");
+            throw new HttpErrorResponseException(HttpStatus.BAD_REQUEST, "Usuário não encontrado");
         } catch (NaoAutorizadoException e) {
-            throw new RecursoNaoEncontradoException(HttpStatus.UNAUTHORIZED, "Não autorizado");
+            throw new HttpErrorResponseException(HttpStatus.UNAUTHORIZED, "Não autorizado");
         }
     }
 
