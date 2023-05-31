@@ -1,11 +1,11 @@
-package med.voll.api.auth.usuario.controller;
+package med.voll.api.usuario.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import med.voll.api.auth.usuario.DTO.DadosUsuarioDTO;
-import med.voll.api.auth.usuario.domain.Usuario;
-import med.voll.api.auth.usuario.enums.Roles;
-import med.voll.api.auth.usuario.service.UsuarioService;
+import med.voll.api.usuario.DTO.DadosUsuarioDTO;
+import med.voll.api.usuario.domain.Usuario;
+import med.voll.api.usuario.enums.Roles;
+import med.voll.api.usuario.service.UsuarioService;
 import med.voll.api.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -93,6 +93,30 @@ public class UsuarioController {
             throw new HttpErrorResponseException(HttpStatus.BAD_REQUEST, "E-mail em uso");
         } catch (UsuarioNaoEncontradoException e) {
             throw new HttpErrorResponseException(HttpStatus.BAD_REQUEST, "Usuário não encontrado");
+        }
+    }
+
+    @PostMapping({"/{id}", "/{id}/"})
+    ResponseEntity<?> inactiveUser(@NonNull @Valid @PathVariable Long id,
+                                   @NonNull @Valid @CurrentSecurityContext SecurityContext context) {
+        try {
+            isSuperUser(context);
+            service.inativarUsuario(id);
+            return ResponseEntity.noContent().build();
+        } catch (UsuarioNaoEncontradoException e) {
+            throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
+        }
+    }
+
+    @DeleteMapping({"/{id}", "/{id}/"})
+    ResponseEntity<?> deleteUser(@NonNull @Valid @PathVariable Long id,
+                                   @NonNull @Valid @CurrentSecurityContext SecurityContext context) {
+        try {
+            isSuperUser(context);
+            service.deletarUsuario(id);
+            return ResponseEntity.noContent().build();
+        } catch (UsuarioNaoEncontradoException e) {
+            throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
         }
     }
 

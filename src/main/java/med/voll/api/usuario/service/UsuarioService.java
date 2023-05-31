@@ -1,9 +1,8 @@
-package med.voll.api.auth.usuario.service;
+package med.voll.api.usuario.service;
 
-import med.voll.api.auth.usuario.DTO.DadosAutenticacaoDTO;
-import med.voll.api.auth.usuario.DTO.DadosUsuarioDTO;
-import med.voll.api.auth.usuario.domain.Usuario;
-import med.voll.api.auth.usuario.repository.UsuarioRepository;
+import med.voll.api.usuario.DTO.DadosUsuarioDTO;
+import med.voll.api.usuario.domain.Usuario;
+import med.voll.api.usuario.repository.UsuarioRepository;
 import med.voll.api.exceptions.EmailExistenteException;
 import med.voll.api.exceptions.UsuarioNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,6 +74,16 @@ public class UsuarioService {
         return changes ? repository.save(usuarioAtual) : usuarioAtual;
     }
 
+    public void inativarUsuario(@NonNull Long id) throws UsuarioNaoEncontradoException {
+        var usuario = repository.findUsuarioById(id).orElseThrow(UsuarioNaoEncontradoException::new);
+        usuario.setAtivo(false);
+        repository.save(usuario);
+    }
+
+    public void deletarUsuario(@NonNull Long id) throws UsuarioNaoEncontradoException {
+        var usuario = repository.findUsuarioById(id).orElseThrow(UsuarioNaoEncontradoException::new);
+        repository.delete(usuario);
+    }
 
     public Optional<Usuario> obterUsuarioPorEmail(@NonNull String email) throws UsuarioNaoEncontradoException {
         var usuario = repository.findByEmail(email).orElseThrow(UsuarioNaoEncontradoException::new);
