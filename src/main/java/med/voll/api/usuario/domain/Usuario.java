@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.*;
+import med.voll.api.usuario.DTO.DadosUsuarioComSenhaDTO;
 import med.voll.api.usuario.DTO.DadosUsuarioDTO;
 import med.voll.api.usuario.enums.Roles;
 import org.springframework.security.core.GrantedAuthority;
@@ -96,7 +97,31 @@ public class Usuario implements UserDetails {
 		);
 	}
 
+	public static DadosUsuarioDTO converterDomainToDadosUsuarioDTOComImagem(Usuario usuario) {
+		return new DadosUsuarioDTO(
+				usuario.id != null ? usuario.id : null,
+				usuario.getLogin(),
+				usuario.getPassword(),
+				usuario.getNome(),
+				usuario.getImagem(),
+				usuario.isSuperUser(),
+				usuario.isAtivo()
+		);
+	}
+
 	public static Usuario converterDadosUsuarioDtoToDomain(DadosUsuarioDTO dto) {
+		return new Usuario(
+				dto.id() != null ? dto.id() : null,
+				dto.login(),
+				dto.password(),
+				dto.nome(),
+				dto.imagem() != null ? dto.imagem() : null,
+				dto.superUser(),
+				dto.ativo()
+		);
+	}
+
+	public static Usuario converterDadosUsuarioComSenhaDtoToDomain(DadosUsuarioComSenhaDTO dto) {
 		return new Usuario(
 				dto.id() != null ? dto.id() : null,
 				dto.login(),

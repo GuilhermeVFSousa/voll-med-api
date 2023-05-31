@@ -1,5 +1,6 @@
 package med.voll.api.usuario.service;
 
+import med.voll.api.usuario.DTO.DadosUsuarioComSenhaDTO;
 import med.voll.api.usuario.DTO.DadosUsuarioDTO;
 import med.voll.api.usuario.domain.Usuario;
 import med.voll.api.usuario.repository.UsuarioRepository;
@@ -29,8 +30,8 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
-    public Usuario criarUsuario(DadosUsuarioDTO dto) throws EmailExistenteException {
-        var usuario = Usuario.converterDadosUsuarioDtoToDomain(dto);
+    public Usuario criarUsuario(DadosUsuarioComSenhaDTO dto) throws EmailExistenteException {
+        var usuario = Usuario.converterDadosUsuarioComSenhaDtoToDomain(dto);
         validarEmail(usuario);
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuario.setAtivo(true);
@@ -38,7 +39,7 @@ public class UsuarioService {
     }
 
     public Usuario editarUsuario(@NonNull String email,
-                                 @NonNull DadosUsuarioDTO dto,
+                                 @NonNull DadosUsuarioComSenhaDTO dto,
                                  @NonNull boolean atualizarSenha,
                                  @NonNull boolean imageRemove)
             throws UsuarioNaoEncontradoException, EmailExistenteException {
@@ -80,14 +81,23 @@ public class UsuarioService {
         repository.save(usuario);
     }
 
+    public void ativarUsuario(@NonNull Long id) throws UsuarioNaoEncontradoException {
+        var usuario = repository.findUsuarioById(id).orElseThrow(UsuarioNaoEncontradoException::new);
+        usuario.setAtivo(true);
+        repository.save(usuario);
+    }
+
     public void deletarUsuario(@NonNull Long id) throws UsuarioNaoEncontradoException {
         var usuario = repository.findUsuarioById(id).orElseThrow(UsuarioNaoEncontradoException::new);
         repository.delete(usuario);
     }
 
-    public Optional<Usuario> obterUsuarioPorEmail(@NonNull String email) throws UsuarioNaoEncontradoException {
-        var usuario = repository.findByEmail(email).orElseThrow(UsuarioNaoEncontradoException::new);
-        return Optional.of(usuario);
+    public Usuario obterUsuarioPorEmail(@NonNull String email) throws UsuarioNaoEncontradoException {
+        return repository.findByEmail(email).orElseThrow(UsuarioNaoEncontradoException::new);
+    }
+
+    public Usuario obterUsuarioPorId(@NonNull Long id) throws UsuarioNaoEncontradoException {
+        return repository.findUsuarioById(id).orElseThrow(UsuarioNaoEncontradoException::new);
     }
 
     public String obterImagemPorUsuario(@NonNull String email) throws UsuarioNaoEncontradoException {
