@@ -107,7 +107,7 @@ public class ConsultaService {
 			throw new ValidacaoException("Não há medicos disponíveis nesta data e horário");
 		}
 		if (medico == null) {
-			throw new ValidacaoException("O médico não está disponíveis nesta data e horário");
+			throw new ValidacaoException("O médico não está disponível nesta data e horário");
 		}
 
 		var consulta = new Consulta(null, medico, paciente, dados.data(), dataTermino, null);
