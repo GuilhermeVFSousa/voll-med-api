@@ -24,6 +24,11 @@ public class UsuarioService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    public UsuarioService(UsuarioRepository repository, BCryptPasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     public List<DadosUsuarioDTO> usuarios() {
         return repository.findAllOrderById().stream()
                 .map(Usuario::converterDomainToDadosUsuarioDTO)
