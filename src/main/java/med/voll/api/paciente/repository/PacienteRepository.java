@@ -24,7 +24,7 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
     @Query("FROM Paciente p " +
             "WHERE p.id = :id")
-    Optional<Paciente> findUserById(@NonNull Long id);
+    Optional<Paciente> findPacienteById(@NonNull Long id);
 
     @Query("SELECT p.email FROM Paciente p " +
             "WHERE p.email = :email")

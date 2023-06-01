@@ -1,11 +1,8 @@
 package med.voll.api.paciente.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import med.voll.api.exceptions.CPFExistenteException;
-import med.voll.api.exceptions.EmailExistenteException;
-import med.voll.api.exceptions.HttpErrorResponseException;
-import med.voll.api.exceptions.PacienteNaoEncontradoException;
-import med.voll.api.paciente.DTO.DadosAtualizacaoPacienteDTO;
+import med.voll.api.exceptions.*;
 import med.voll.api.paciente.DTO.DadosCadastroPacienteDTO;
 import med.voll.api.paciente.DTO.DadosDetalhamentoPacienteDTO;
 import med.voll.api.paciente.DTO.DadosListagemPacienteDTO;
@@ -23,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
 @RestController
 @RequestMapping("pacientes")
 @SecurityRequirement(name = "bearer-key")
@@ -38,7 +33,7 @@ public class PacienteController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<DadosDetalhamentoPacienteDTO> cadastrar(@RequestBody @Valid DadosCadastroPacienteDTO dados, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<DadosDetalhamentoPacienteDTO> cadastrar(@NonNull @RequestBody @Valid DadosCadastroPacienteDTO dados, UriComponentsBuilder uriBuilder) {
         try {
             var paciente = service.cadastrarPaciente(dados);
             var dto = Paciente.domainToDadosDetalhamentoPacienteDTO(paciente);
@@ -83,11 +78,16 @@ public class PacienteController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<?> excluir(@PathVariable Long id) {
-        var paciente = repository.getReferenceById(id);
-        paciente.excluir();
+    public ResponseEntity<?> excluir(@NonNull @Valid @PathVariable Long id) {
+        try {
+            service.excluirPaciente(id);
+            return ResponseEntity.noContent().build();
+        } catch (PacienteNaoEncontradoException e) {
+            throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "Paciente não encontrado");
+        } catch (DadosVinculadosException e) {
+            throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "Paciente com consultas agendadas não pode ser excluído");
+        }
 
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
