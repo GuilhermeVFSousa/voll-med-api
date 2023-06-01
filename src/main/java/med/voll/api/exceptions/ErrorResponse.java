@@ -7,15 +7,15 @@ import java.time.Instant;
 
 public class ErrorResponse {
     private HttpStatus status;
-    private String mensagem;
+    private String message;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern =
             "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
     private Instant timestamp;
 
-    public ErrorResponse(HttpStatus status, String mensagem) {
+    public ErrorResponse(HttpStatus status, String message) {
         this.status = status;
-        this.mensagem = mensagem;
+        this.message = message;
         this.timestamp = Instant.now();
     }
 
@@ -27,12 +27,12 @@ public class ErrorResponse {
         this.status = status;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Instant getTimestamp() {

@@ -1,5 +1,7 @@
 package med.voll.api.exceptions;
 
+import med.voll.api.exceptions.domain.InvalidFieldsResponse;
+import med.voll.api.util.DateUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 public class RestExceptionHandler {
 
     @ExceptionHandler(HttpErrorResponseException.class)
-    public ResponseEntity<ErrorResponse> handleRecursoNaoEncontradoException(HttpErrorResponseException e) {
+    public ResponseEntity<ErrorResponse> handleHttpErrorResponseException(HttpErrorResponseException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getStatus(), e.getMessage());
         return ResponseEntity.status(e.getStatus()).body(errorResponse);
     }
@@ -53,7 +55,7 @@ public class RestExceptionHandler {
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, List<Map<String, String>>>> handleValidationException(MethodArgumentNotValidException e) {
+    public ResponseEntity<InvalidFieldsResponse> handleValidationException(MethodArgumentNotValidException e) {
         List<Map<String, String>> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -64,8 +66,11 @@ public class RestExceptionHandler {
                     return errorDetails;
                 })
                 .collect(Collectors.toList());
-        Map<String, List<Map<String, String>>> response = new HashMap<>();
-        response.put("errors", errors);
+
+        var response = new InvalidFieldsResponse(
+                HttpStatus.BAD_REQUEST,
+                DateUtils.getTimestamp(),
+                errors);
 
         return ResponseEntity.badRequest().body(response);
     }

@@ -9,8 +9,8 @@ public class HttpErrorResponseException extends RuntimeException {
         this.status = status;
     }
 
-    public HttpErrorResponseException(HttpStatus status, String mensagem) {
-        super(mensagem);
+    public HttpErrorResponseException(HttpStatus status, String message) {
+        super(message);
         this.status = status;
     }
 
