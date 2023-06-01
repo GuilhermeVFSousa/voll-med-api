@@ -1,24 +1,23 @@
 package med.voll.api.paciente.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import med.voll.api.paciente.DTO.DadosAtualizacaoPacienteDTO;
 import med.voll.api.paciente.DTO.DadosCadastroPacienteDTO;
 import med.voll.api.endereco.domain.Endereco;
+import med.voll.api.paciente.DTO.DadosDetalhamentoPacienteDTO;
 
 @Table(name = "pacientes")
 @Entity(name = "Paciente")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 
 public class Paciente {
-	
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
     private String email;
@@ -57,5 +56,41 @@ public class Paciente {
     public void excluir() {
         this.ativo = false;
     }
+
+    public static DadosDetalhamentoPacienteDTO domainToDadosDetalhamentoPacienteDTO(Paciente paciente) {
+        return new DadosDetalhamentoPacienteDTO(
+                paciente.getId() != null ? paciente.getId() : null,
+                paciente.getNome(),
+                paciente.getEmail(),
+                paciente.getCpf(),
+                paciente.getTelefone(),
+                paciente.getEndereco()
+
+        );
+    }
+    public static Paciente dadosDetalhamentoPacienteToDomain(DadosDetalhamentoPacienteDTO dto) {
+        return new Paciente(
+                dto.id() != null ? dto.id() : null,
+                dto.nome(),
+                dto.email(),
+                dto.telefone(),
+                dto.cpf(),
+                dto.endereco(),
+                true
+        );
+    }
+
+    public static Paciente dadosCadastroPacienteToDomain(DadosCadastroPacienteDTO dto) {
+        return new Paciente(
+                null,
+                dto.nome(),
+                dto.email(),
+                dto.telefone(),
+                dto.cpf(),
+                new Endereco(dto.endereco()),
+                true
+        );
+    }
+
 
 }
