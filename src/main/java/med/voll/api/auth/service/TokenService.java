@@ -35,7 +35,7 @@ public class TokenService {
 					.withSubject(email)
 					.withPayload(Map.of(
 							"id", id,
-							"nome", nome,
+							"nome",  nome != null ? nome : "",
 							"ativo",ativo,
 							"superUser", superUser))
 		    		.withExpiresAt(dataExpiracao())
