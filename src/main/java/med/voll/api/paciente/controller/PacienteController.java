@@ -61,7 +61,7 @@ public class PacienteController {
     @PutMapping({"/{id}", "/{id}/"})
     @Transactional
     public ResponseEntity<DadosDetalhamentoPacienteDTO> update(@NonNull @PathVariable Long id,
-                                       @NonNull @RequestBody @Valid DadosDetalhamentoPacienteDTO dto) {
+                                                               @NonNull @RequestBody @Valid DadosDetalhamentoPacienteDTO dto) {
         try {
             var updatedPaciente = service.atualizarPaciente(id, dto);
             var newDto = Paciente.domainToDadosDetalhamentoPacienteDTO(updatedPaciente);

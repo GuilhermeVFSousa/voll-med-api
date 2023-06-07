@@ -16,6 +16,7 @@ import lombok.Setter;
 import med.voll.api.endereco.domain.Endereco;
 import med.voll.api.medico.DTO.DadosAtualizacaoMedicoDTO;
 import med.voll.api.medico.DTO.DadosCadastroMedicoDTO;
+import med.voll.api.medico.DTO.DadosDetalhamentoMedicoDTO;
 import med.voll.api.medico.Especialidade;
 
 @Table(name = "medicos")
@@ -63,12 +64,58 @@ public class Medico {
 		if (dados.endereco() != null) {
 			this.endereco.atualizarInformacoes(dados.endereco());
 		}
-		
+
 	}
 
 	public void inativar() {
 		this.ativo = false;
-		
+
 	}
-	
+
+	public static DadosDetalhamentoMedicoDTO domainToDadosDetalhamentoMedico(Medico medico) {
+		return new DadosDetalhamentoMedicoDTO(
+				medico.getId() != null ? medico.getId() : null,
+				medico.getNome(),
+				medico.getEmail(),
+				medico.getCrm(),
+				medico.getTelefone(),
+				medico.getEspecialidade(),
+				medico.getEndereco()
+		);
+	}
+
+	public static Medico dadosDetalhamentoMedicoToDomain(DadosDetalhamentoMedicoDTO dto) {
+		return new Medico(
+				dto.id() != null ? dto.id() : null,
+				dto.nome(),
+				dto.email(),
+				dto.crm(),
+				dto.telefone(),
+				dto.especialidade(),
+				dto.endereco(),
+				true
+		);
+	}
+
+	public static Medico dadosCadastroMedicoToDomain(DadosCadastroMedicoDTO dto) {
+		return new Medico(
+				null,
+				dto.nome(),
+				dto.telefone(),
+				dto.email(),
+				dto.crm(),
+				dto.especialidade(),
+				new Endereco(
+						dto.endereco().logradouro(),
+						dto.endereco().bairro(),
+						dto.endereco().cep(),
+						dto.endereco().numero(),
+						dto.endereco().complemento(),
+						dto.endereco().cidade(),
+						dto.endereco().uf()
+				),
+				true
+		);
+	}
+
 }

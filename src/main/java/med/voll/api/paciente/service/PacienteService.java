@@ -10,12 +10,9 @@ import med.voll.api.paciente.DTO.DadosDetalhamentoPacienteDTO;
 import med.voll.api.paciente.domain.Paciente;
 import med.voll.api.paciente.repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.SQLIntegrityConstraintViolationException;
 
 @Service
 public class PacienteService {
