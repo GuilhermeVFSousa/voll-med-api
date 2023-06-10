@@ -17,7 +17,7 @@ public record DadosListagemMedicoDTO(
 				medico.getId(),
 				medico.getNome(),
 				medico.getEmail(),
-				medico.getEmail(),
+				medico.getTelefone(),
 				medico.getCrm(),
 				medico.getEspecialidade());
 	}
