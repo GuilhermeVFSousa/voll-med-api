@@ -19,8 +19,15 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
     List<Consulta> listAllConsultas();
 
     @Query("FROM Consulta c " +
+            "WHERE c.medico.id = :id " +
+            "AND (c.data BETWEEN :initialDate AND :finalDate)")
+    List<Consulta> listAllConsultasByDate(@NonNull Long id,
+                                          @NonNull LocalDateTime initialDate,
+                                          @NonNull LocalDateTime finalDate);
+
+    @Query("FROM Consulta c " +
             "WHERE c.medico.id = :id")
-    List<Consulta> listAllConsultasByMedicoId(Long id);
+    List<Consulta> listAllConsultasByMedicoId(@NonNull Long id);
 
     @Query("FROM Consulta c " +
             "WHERE c.paciente.id = :id")

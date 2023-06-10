@@ -40,6 +40,17 @@ public class ConsultaController {
 		return ResponseEntity.ok().body(consultaService.listarConsultasPorMedico(id));
 	}
 
+	@GetMapping("/medico/{id}/data/{date}")
+	public ResponseEntity<List<DadosListagemConsultaDTO>>getConsultaByIdAndDate(@PathVariable Long id,
+																				@PathVariable String date) {
+		try {
+			var response = consultaService.listarConsultasPorMedicoEData(id, date, null);
+			return ResponseEntity.ok().body(response);
+		} catch (ConsultaNaoEncontradaException e) {
+			throw new HttpErrorResponseException(HttpStatus.NOT_FOUND, "Consulta não encontrada");
+		}
+	}
+
 	@GetMapping({"/{id}", "/{id}/"})
 	public ResponseEntity<DadosListagemConsultaDTO>getConsultaById(@PathVariable Long id) {
 		DadosListagemConsultaDTO response = null;

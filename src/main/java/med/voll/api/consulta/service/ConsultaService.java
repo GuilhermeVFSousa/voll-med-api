@@ -1,27 +1,31 @@
 package med.voll.api.consulta.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import med.voll.api.consulta.DTO.*;
 import med.voll.api.consulta.domain.Consulta;
 import med.voll.api.consulta.repository.ConsultaRepository;
-import med.voll.api.consulta.validacoes.cancelamento.ValidadorCancelamentoDeConsulta;
-import med.voll.api.exceptions.*;
-import med.voll.api.medico.DTO.DadosResumidosMedicoDTO;
-import med.voll.api.paciente.DTO.DadosResumidosPacienteDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
-
 import med.voll.api.consulta.validacoes.agendamento.ValidadorAgendamentoDeConsulta;
+import med.voll.api.consulta.validacoes.cancelamento.ValidadorCancelamentoDeConsulta;
+import med.voll.api.exceptions.ConsultaNaoEncontradaException;
+import med.voll.api.exceptions.MedicoNaoEncontradoException;
+import med.voll.api.exceptions.PacienteNaoEncontradoException;
+import med.voll.api.exceptions.ValidacaoException;
+import med.voll.api.medico.DTO.DadosResumidosMedicoDTO;
 import med.voll.api.medico.domain.Medico;
 import med.voll.api.medico.repository.MedicoRepository;
+import med.voll.api.paciente.DTO.DadosResumidosPacienteDTO;
 import med.voll.api.paciente.repository.PacienteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ConsultaService {
@@ -50,6 +54,19 @@ public class ConsultaService {
 
 	public List<DadosListagemConsultaDTO> listarConsultasPorMedico(@NonNull Long id) {
 		return consultaRepository.listAllConsultasByMedicoId(id)
+				.stream()
+				.map(this::converterDadosConsulta)
+				.collect(Collectors.toList());
+	}
+
+	public List<DadosListagemConsultaDTO> listarConsultasPorMedicoEData(@NonNull Long id,
+																		@NonNull String initialDate,
+																		@Nullable String finalDate) {
+		var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+		var parsedInitialDate = LocalDateTime.parse(initialDate + "T00:00:00", formatter);
+		LocalDateTime parsedFinalDate = null;
+		parsedFinalDate = LocalDateTime.parse(Objects.requireNonNullElse(finalDate, initialDate) + "T23:59:00", formatter);
+		return consultaRepository.listAllConsultasByDate(id, parsedInitialDate, parsedFinalDate)
 				.stream()
 				.map(this::converterDadosConsulta)
 				.collect(Collectors.toList());
